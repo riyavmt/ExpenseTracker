@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel ="stylesheet" href="tracker.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<body>
+    <div class="heading"><h1><b>Track your expenses:</b></h1></div>
+        <div class = "container">
+            <form id ="MyTracker">
+            <label for = 'amt' class = 'form-label'>Expense Amount</label>
+            <input type = "number"class = 'form-control' id="amt"><br>
+            <label for = 'des'class = 'form-label'>Description</label>
+            <input type = "text"class = 'form-control' id="des"><br>
+            <label for = 'ctg'class = 'form-label'>Choose Category:</label>
+            <select name = 'ctg' id="ctg">
+                
+                <option value = 'Personal'>Personal</option>
+                <option value = 'Family'>Family</option>
+                <option value = 'Entertainment'>Entertainment</option>
+                <option value = 'Trip'>Trip</option>
+                <option value = 'Home'>Home</option>
+                <option value = 'Others'>Others</option>
+
+            </select>
+            <div class="btnclick"><button class="btn btn-dark btn-outline-light btn-sm"type="submit">Add</button></div>
+
+        
+    </form>
+    <ul id="expenseList"></ul>
+</div>
+<script>
+    //Adding submission details to the list:
+    let arr = [];
+    const details = document.getElementById('MyTracker');
+    const list = document.getElementById('expenseList');
+
+    details.addEventListener('submit',signup);
+    function signup(e){
+        e.preventDefault();
+            const amount = e.target.amt.value;
+            const desc = e.target.des.value;
+            const category = e.target.ctg.value;
+
+            let data={
+                amt:amount,
+                des:desc,
+                ctg:category
+            }
+            const li = document.createElement('li');
+            li.appendChild(document.createTextNode(`${data.amt}-${data.des}-${data.ctg}`));
+            list.appendChild(li);
+            //Create del btn:
+            var delBtn = document.createElement("button");
+            delBtn.className = "btn btn-danger btn-sm float-right delete ms-2"
+            delBtn.appendChild(document.createTextNode("Delete"));
+            delBtn.onclick= remove;
+            li.appendChild(delBtn);
+            //Create edit btn:
+            var editBtn = document.createElement("button");
+            editBtn.className = "btn btn-primary btn-sm float-right edit ms-2"
+            editBtn.appendChild(document.createTextNode("Edit"));
+            editBtn.onclick= edit;
+            li.appendChild( editBtn);
+            //store in local storage:
+            arr.push(data);
+            let dataJSON = JSON.stringify(arr);
+            localStorage.setItem('arr',dataJSON);
+
+            
+
+
+
+    }
+    function remove(e){
+            let li = e.target.parentElement;
+            const text = li.firstChild.textContent;
+            const newText = text.split("-");
+
+            const exp = parseInt(newText[0]);
+            for(let i=0; i<arr.length; i++){
+                if(arr[i].amt==exp){
+                    arr.splice(i,1);
+                    localStorage.setItem('arr',JSON.stringify(arr));
+                    list.removeChild(li);
+                }
+            }
+            
+        }
+        function edit(e){
+            let li = e.target.parentElement;
+            const text = li.firstChild.textContent;
+            const newText = text.split("-");
+
+            const exp = parseInt(newText[0]);
+            for(let i=0; i<arr.length; i++){
+                if(arr[i].amt==exp){
+                    document.getElementById("amt").value=arr[i].amt;
+                    document.getElementById("des").value=arr[i].des;
+                    document.getElementById("ctg").value=arr[i].ctg;
+                    arr.splice(i,1);
+                    localStorage.setItem('arr',JSON.stringify(arr));
+                    list.removeChild(li);
+                }
+            }
+            
+        }
+
+    
+
+</script>
+</body>
+</html>
